@@ -27,3 +27,6 @@ npm-debug.log*
 
 # Matterbridge storage (don't commit personal config)
 .matterbridge/
+
+# Claude Code context
+CLAUDE.md
