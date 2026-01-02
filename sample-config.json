@@ -1,0 +1,21 @@
+{
+  "name": "Litetouch 2000",
+  "type": "DynamicPlatform",
+  "serialPort": "/dev/ttyUSB0",
+  "baudRate": 9600,
+  "pollingInterval": 2000,
+  "commandTimeout": 1000,
+  "dimmers": [
+    { "address": "01-1", "name": "Living Room Main" },
+    { "address": "01-2", "name": "Living Room Accent" },
+    { "address": "01-3", "name": "Kitchen Island" },
+    { "address": "02-1", "name": "Dining Room" },
+    { "address": "02-2", "name": "Master Bedroom" }
+  ],
+  "switches": [
+    { "address": "05-1", "name": "Garage" },
+    { "address": "05-2", "name": "Porch Light" },
+    { "address": "05-3", "name": "Landscape Lights" }
+  ],
+  "debug": false
+}

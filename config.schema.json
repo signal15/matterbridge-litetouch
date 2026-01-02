@@ -1,0 +1,95 @@
+{
+  "title": "Litetouch 2000 Configuration",
+  "description": "Configure your Litetouch 2000 lighting system connection and loads",
+  "type": "object",
+  "properties": {
+    "name": {
+      "title": "Plugin Name",
+      "description": "Name displayed in Matterbridge",
+      "type": "string",
+      "default": "Litetouch 2000"
+    },
+    "serialPort": {
+      "title": "Serial Port",
+      "description": "Path to the USB-serial device (e.g., /dev/ttyUSB0)",
+      "type": "string",
+      "default": "/dev/ttyUSB0"
+    },
+    "baudRate": {
+      "title": "Baud Rate",
+      "description": "Serial port baud rate",
+      "type": "integer",
+      "default": 9600,
+      "enum": [9600, 19200, 38400, 57600, 115200]
+    },
+    "pollingInterval": {
+      "title": "Polling Interval (ms)",
+      "description": "Time between polling each load for status updates (minimum 500ms)",
+      "type": "integer",
+      "default": 2000,
+      "minimum": 500,
+      "maximum": 10000
+    },
+    "commandTimeout": {
+      "title": "Command Timeout (ms)",
+      "description": "How long to wait for a response before timing out",
+      "type": "integer",
+      "default": 1000,
+      "minimum": 250,
+      "maximum": 5000
+    },
+    "dimmers": {
+      "title": "Dimmer Loads",
+      "description": "List of dimmer module-output addresses (e.g., 01-1, 03-4)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "description": "Module-output address (e.g., 01-1)",
+            "type": "string",
+            "pattern": "^\\d{1,2}-\\d{1,2}$"
+          },
+          "name": {
+            "title": "Name",
+            "description": "Friendly name for this load",
+            "type": "string"
+          }
+        },
+        "required": ["address", "name"]
+      },
+      "default": []
+    },
+    "switches": {
+      "title": "Relay/Switch Loads",
+      "description": "List of relay/switch module-output addresses (e.g., 02-3, 05-6)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "description": "Module-output address (e.g., 02-3)",
+            "type": "string",
+            "pattern": "^\\d{1,2}-\\d{1,2}$"
+          },
+          "name": {
+            "title": "Name",
+            "description": "Friendly name for this load",
+            "type": "string"
+          }
+        },
+        "required": ["address", "name"]
+      },
+      "default": []
+    },
+    "debug": {
+      "title": "Debug Logging",
+      "description": "Enable verbose debug logging",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["serialPort", "dimmers", "switches"]
+}
