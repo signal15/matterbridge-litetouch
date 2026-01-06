@@ -185,7 +185,7 @@ Commands are terminated with carriage return (`\r`).
 
 ## License
 
-MIT
+[PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/) - Free for personal and noncommercial use.
 
 ## Credits
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Matterbridge plugin for Litetouch 2000 lighting control systems",
   "author": "signal15",
-  "license": "MIT",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/signal15/matterbridge-litetouch.git"
