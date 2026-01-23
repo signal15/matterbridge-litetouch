@@ -54,32 +54,54 @@ ls -la /dev/serial/by-id/
 ### 1. Install Matterbridge
 
 ```bash
-npm install -g matterbridge
+sudo npm install -g matterbridge
 ```
 
 ### 2. Install This Plugin
 
-From the plugin directory:
+Install globally alongside Matterbridge:
 ```bash
+# Clone the repository
+git clone https://github.com/signal15/matterbridge-litetouch.git
 cd matterbridge-litetouch
+
+# Install dependencies and build
 npm install
 npm run build
-npm link
+
+# Install globally (must use sudo since matterbridge runs as root)
+sudo npm install -g .
 ```
 
-Then link it to Matterbridge:
+Then register with Matterbridge:
 ```bash
-matterbridge -add ./matterbridge-litetouch
+sudo matterbridge -add matterbridge-litetouch
 ```
 
-Or install from npm (once published):
+### Updating the Plugin
+
+After making changes or pulling updates:
 ```bash
-matterbridge -add matterbridge-litetouch
+cd matterbridge-litetouch
+npm run build
+sudo cp -r dist/* /usr/lib/node_modules/matterbridge-litetouch/dist/
+sudo systemctl restart matterbridge
 ```
 
 ### 3. Configure the Plugin
 
-Open the Matterbridge web UI (default: http://localhost:8283) and configure:
+**Note:** The Matterbridge web UI does not support the array-of-objects format needed for load configuration. Edit the config file directly:
+
+```bash
+sudo nano /root/.matterbridge/matterbridge-litetouch.config.json
+```
+
+After editing, restart matterbridge:
+```bash
+sudo systemctl restart matterbridge
+```
+
+Configuration options:
 
 - **Serial Port**: Path to your USB-serial device (e.g., `/dev/ttyUSB0`)
 - **Baud Rate**: Usually 9600 (default)
