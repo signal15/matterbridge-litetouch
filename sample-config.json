@@ -3,7 +3,7 @@
   "type": "DynamicPlatform",
   "serialPort": "/dev/ttyUSB0",
   "baudRate": 9600,
-  "pollingInterval": 2000,
+  "pollingInterval": 250,
   "commandTimeout": 1000,
   "dimmers": [
     { "address": "01-1", "name": "Living Room Main" },
