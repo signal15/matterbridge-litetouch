@@ -28,6 +28,8 @@ export interface LitetouchConfig {
   debug: boolean;
 }
 
+export type DeviceType = 'dimmer' | 'switch';
+
 export class LitetouchConnection extends EventEmitter {
   private port: SerialPort | null = null;
   private parser: ReadlineParser | null = null;
@@ -35,6 +37,7 @@ export class LitetouchConnection extends EventEmitter {
   private config: LitetouchConfig;
   private pollingTimer: NodeJS.Timeout | null = null;
   private loadAddresses: string[] = [];
+  private deviceTypes: Map<string, DeviceType> = new Map();
   private currentPollingIndex = 0;
   private pendingResponse: {
     resolve: (response: string | null) => void;
@@ -52,10 +55,13 @@ export class LitetouchConnection extends EventEmitter {
   }
 
   /**
-   * Set the list of load addresses to poll
+   * Set the list of load addresses to poll with their device types
    */
-  setLoadAddresses(addresses: string[]): void {
+  setLoadAddresses(addresses: string[], deviceTypes?: Map<string, DeviceType>): void {
     this.loadAddresses = addresses;
+    if (deviceTypes) {
+      this.deviceTypes = deviceTypes;
+    }
     this.currentPollingIndex = 0;
   }
 
@@ -90,12 +96,16 @@ export class LitetouchConnection extends EventEmitter {
 
       this.port.on('error', (err) => {
         this.log(`Serial port error: ${err.message}`);
+        this.stopPolling();
+        this.commandQueue.clear();
         this.emit('error', err);
       });
 
       this.port.on('close', () => {
         this.log('Serial port closed');
         this.connected = false;
+        this.stopPolling();
+        this.commandQueue.clear();
         this.emit('disconnected');
       });
     });
@@ -149,10 +159,18 @@ export class LitetouchConnection extends EventEmitter {
     }
 
     const raw = parseInt(match[1], 10);
+    const deviceType = this.deviceTypes.get(address);
 
-    // Convert raw value to percentage (0-250 -> 0-100)
-    // For relays, 0=off, 1=on; for dimmers, 0-250 range
-    const level = raw <= 1 ? raw * 100 : Math.round((raw / 250) * 100);
+    // Convert raw value to percentage based on device type
+    // Dimmers: 0-250 maps linearly to 0-100%
+    // Switches: 0 = off, 1-250 = on (any non-zero value means on)
+    let level: number;
+    if (deviceType === 'switch') {
+      level = raw > 0 ? 100 : 0;
+    } else {
+      // Default to dimmer behavior (linear 0-250 -> 0-100)
+      level = Math.round((raw / 250) * 100);
+    }
 
     return { address, level, raw };
   }

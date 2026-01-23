@@ -16,7 +16,7 @@ import {
 } from 'matterbridge';
 import { AnsiLogger } from 'matterbridge/logger';
 import { OnOff, LevelControl } from 'matterbridge/matter/clusters';
-import { LitetouchConnection, type LoadStatus, type LitetouchConfig } from './litetouchConnection.js';
+import { LitetouchConnection, type LoadStatus, type LitetouchConfig, type DeviceType } from './litetouchConnection.js';
 
 interface LoadDefinition {
   address: string;
@@ -82,12 +82,17 @@ export class LitetouchPlatform extends MatterbridgeDynamicPlatform {
 
     this.connection = new LitetouchConnection(connectionConfig);
 
-    // Set up all load addresses for polling
+    // Set up all load addresses for polling with device type info
     const allAddresses = [
       ...dimmers.map(d => d.address),
       ...switches.map(s => s.address),
     ];
-    this.connection.setLoadAddresses(allAddresses);
+    // Convert deviceTypes to the format expected by LitetouchConnection
+    const deviceTypeMap = new Map<string, DeviceType>();
+    for (const [address, type] of this.deviceTypes) {
+      deviceTypeMap.set(address, type);
+    }
+    this.connection.setLoadAddresses(allAddresses, deviceTypeMap);
 
     // Handle status updates from polling
     this.connection.on('loadStatus', (status: LoadStatus) => {
@@ -174,12 +179,21 @@ export class LitetouchPlatform extends MatterbridgeDynamicPlatform {
       this.pendingOnTimers.set(load.address, timer);
     });
     device.addCommandHandler('off', async () => {
+      // Cancel any pending 'on' command to prevent it firing after this off
+      const pendingTimer = this.pendingOnTimers.get(load.address);
+      if (pendingTimer) {
+        clearTimeout(pendingTimer);
+        this.pendingOnTimers.delete(load.address);
+        this.log.debug(`Dimmer ${load.address} cancelled pending ON`);
+      }
       this.log.debug(`Dimmer ${load.address} OFF command`);
       await this.setDimmerLevel(load.address, 0);
     });
     device.addCommandHandler('toggle', async () => {
-      const currentLevel = device.getAttribute(LevelControl.Cluster.id, 'currentLevel') as number;
-      if (currentLevel > 0) {
+      // Use OnOff cluster state, not currentLevel (which retains last value when off)
+      const isOn = device.getAttribute(OnOff.Cluster.id, 'onOff') as boolean;
+      if (isOn) {
+        this.log.debug(`Dimmer ${load.address} TOGGLE command -> OFF`);
         await this.setDimmerLevel(load.address, 0);
       } else {
         const lastLevel = this.lastDimmerLevels.get(load.address) || 100;
