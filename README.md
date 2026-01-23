@@ -103,7 +103,7 @@ Configuration options:
   "name": "Litetouch 2000",
   "serialPort": "/dev/ttyUSB0",
   "baudRate": 9600,
-  "pollingInterval": 2000,
+  "pollingInterval": 250,
   "commandTimeout": 1000,
   "dimmers": [
     { "address": "01-1", "name": "Living Room Main" },

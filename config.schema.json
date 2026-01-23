@@ -24,10 +24,10 @@
     },
     "pollingInterval": {
       "title": "Polling Interval (ms)",
-      "description": "Time between polling each load for status updates (minimum 500ms)",
+      "description": "Time between polling each load for status updates. Lower values may cause responses to arrive out of order if the CCU cannot keep up.",
       "type": "integer",
       "default": 2000,
-      "minimum": 500,
+      "minimum": 250,
       "maximum": 10000
     },
     "commandTimeout": {
