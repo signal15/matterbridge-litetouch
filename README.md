@@ -53,39 +53,26 @@ ls -la /dev/serial/by-id/
 
 ### 1. Install Matterbridge
 
+If you haven't already, install Matterbridge:
+
 ```bash
 sudo npm install -g matterbridge
 ```
 
 ### 2. Install This Plugin
 
-Install globally alongside Matterbridge:
+**Option A: Matterbridge Web UI (Recommended)**
+
+1. Open the Matterbridge web UI (default: http://localhost:8283)
+2. Click the three-dot menu next to the plugin search box
+3. Find `matterbridge-litetouch` in the list
+4. Click Install
+
+**Option B: Command Line**
+
 ```bash
-# Clone the repository
-git clone https://github.com/signal15/matterbridge-litetouch.git
-cd matterbridge-litetouch
-
-# Install dependencies and build
-npm install
-npm run build
-
-# Install globally (must use sudo since matterbridge runs as root)
-sudo npm install -g .
-```
-
-Then register with Matterbridge:
-```bash
+sudo npm install -g matterbridge-litetouch
 sudo matterbridge -add matterbridge-litetouch
-```
-
-### Updating the Plugin
-
-After making changes or pulling updates:
-```bash
-cd matterbridge-litetouch
-npm run build
-sudo cp -r dist/* /usr/lib/node_modules/matterbridge-litetouch/dist/
-sudo systemctl restart matterbridge
 ```
 
 ### 3. Configure the Plugin
@@ -204,6 +191,19 @@ The Litetouch 2000 uses an ASCII protocol over RS-232:
   - For dimmers: `LLL` = `000`-`250`
 
 Commands are terminated with carriage return (`\r`).
+
+## Development
+
+To build from source:
+
+```bash
+git clone https://github.com/signal15/matterbridge-litetouch.git
+cd matterbridge-litetouch
+npm install
+npm run build
+sudo npm install -g .
+sudo matterbridge -add matterbridge-litetouch
+```
 
 ## License
 
