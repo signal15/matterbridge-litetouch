@@ -30,3 +30,4 @@ npm-debug.log*
 
 # Claude Code context
 CLAUDE.md
+codereview.md
